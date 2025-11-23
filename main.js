@@ -2,7 +2,7 @@
 const TASK_CLASS = "task-box";
 const FINISHED_CLASS = "finished";
 
-//Setting up vaiables
+//Setting up variables
 let todoContainer = document.querySelector(".todo-container");
 let input = document.querySelector(".add-task input");
 let addButton = document.querySelector(".add-task .add");
@@ -10,10 +10,33 @@ let tasksContainer = document.querySelector(".task-content");
 let tasksCount = document.querySelector(".tasks-count span");
 let tasksCompleted = document.querySelector(".tasks-completed span");
 
-//Focus on windows field
+//Handle onload logic
 window.onload = () => {
   input.focus();
+  const data = JSON.parse(localStorage.getItem("tasks"));
+  if (!data) return;
+  data.map((task) => {
+    renderTasks(task.task, task.finished);
+  });
+  calculateTasks();
 };
+
+//Render Task
+function renderTasks(task, finished = false) {
+  //create task container
+  let newTask = document.createElement("span");
+  newTask.className = TASK_CLASS;
+  if (finished) newTask.classList.add(FINISHED_CLASS);
+  newTask.textContent = task;
+
+  //create delete btn
+  let deleteBtn = document.createElement("span");
+  deleteBtn.className = "delete";
+  deleteBtn.textContent = "Delete";
+
+  newTask.appendChild(deleteBtn);
+  tasksContainer.appendChild(newTask);
+}
 
 //Add Task
 addButton.onclick = () => {
@@ -22,7 +45,7 @@ addButton.onclick = () => {
     return Swal.fire("You cannot add an empty task");
   }
 
-  let currentTasks = document.querySelectorAll(".task-box");
+  let currentTasks = document.querySelectorAll(`.${TASK_CLASS}`);
 
   //Check for duplicate tasks
   const exists = [...currentTasks].some((task) => task.firstChild.nodeValue.trim() === input.value.trim());
@@ -35,19 +58,11 @@ addButton.onclick = () => {
     tasksContainer.querySelector(".no-tasks-msg").remove();
   }
 
-  //create task container
-  let newTask = document.createElement("span");
-  newTask.className = TASK_CLASS;
-  newTask.textContent = input.value;
-
-  //create delete btn
-  let deleteBtn = document.createElement("span");
-  deleteBtn.className = "delete";
-  deleteBtn.textContent = "Delete";
-
-  newTask.appendChild(deleteBtn);
-  tasksContainer.appendChild(newTask);
+  renderTasks(input.value, false);
   calculateTasks();
+  updateLocalStorage();
+
+  //reset input
   input.value = "";
   input.focus();
 };
@@ -57,6 +72,7 @@ tasksContainer.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete")) {
     e.target.parentElement.remove();
     calculateTasks();
+    updateLocalStorage();
     if (tasksContainer.childElementCount === 0) {
       createNoTaskMessage();
     }
@@ -66,6 +82,7 @@ tasksContainer.addEventListener("click", (e) => {
   if (e.target.classList.contains(TASK_CLASS)) {
     e.target.classList.toggle(FINISHED_CLASS);
     calculateTasks();
+    updateLocalStorage();
   }
 });
 
@@ -79,6 +96,7 @@ todoContainer.appendChild(deleteAllBtn);
 deleteAllBtn.onclick = () => {
   tasksContainer.innerHTML = "";
   calculateTasks();
+  updateLocalStorage();
   createNoTaskMessage();
 };
 
@@ -96,6 +114,7 @@ finishAllBtn.onclick = () => {
     }
   });
   calculateTasks();
+  updateLocalStorage();
 };
 
 //Create no tasks message
@@ -110,4 +129,15 @@ function createNoTaskMessage() {
 function calculateTasks() {
   tasksCount.textContent = document.querySelectorAll(`.${TASK_CLASS}`).length;
   tasksCompleted.textContent = document.querySelectorAll(`.${FINISHED_CLASS}`).length;
+}
+
+//Update local storage
+function updateLocalStorage() {
+  const data = Array.from(document.querySelectorAll(".task-box")).map((el) => {
+    return {
+      task: el.firstChild.nodeValue.trim(),
+      finished: el.classList.contains(FINISHED_CLASS),
+    };
+  });
+  localStorage.setItem("tasks", JSON.stringify(data));
 }
