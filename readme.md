@@ -13,9 +13,12 @@ Supports adding tasks, marking them as finished, deleting tasks, and saving ever
 - ✔ Delete single tasks
 - ✔ Delete all tasks
 - ✔ Finish all tasks
-- ✔ Automatically save tasks to **localStorage**
+- ✔ Automatically save tasks and theme preference to **localStorage**
 - ✔ Load saved tasks on page refresh
 - ✔ Shows “No tasks to show” when list is empty
+- ✔ Light & Dark Theme toggle
+
+
 
 ---
 

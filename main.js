@@ -9,15 +9,44 @@ let addButton = document.querySelector(".add-task .add");
 let tasksContainer = document.querySelector(".task-content");
 let tasksCount = document.querySelector(".tasks-count span");
 let tasksCompleted = document.querySelector(".tasks-completed span");
+let toggleTheme = document.querySelector(".toggle-theme");
+
+// Toggle Theme
+toggleTheme.onclick = () => {
+  document.body.classList.toggle("dark");
+
+  // switch icon
+  if (document.body.classList.contains("dark")) {
+    toggleTheme.classList.replace("fa-moon", "fa-sun");
+    localStorage.setItem("theme", "dark");
+  } else {
+    toggleTheme.classList.replace("fa-sun", "fa-moon");
+    localStorage.setItem("theme", "light");
+  }
+};
 
 //Handle onload logic
 window.onload = () => {
   input.focus();
+
+  // Load theme from localStorage
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    toggleTheme.classList.replace("fa-moon", "fa-sun");
+  }
+
   const data = JSON.parse(localStorage.getItem("tasks"));
   if (!data) return;
+
+  // remove "no tasks" message IF there are saved tasks
+  const msg = tasksContainer.querySelector(".no-tasks-msg");
+  if (msg) msg.remove();
+
   data.map((task) => {
     renderTasks(task.task, task.finished);
   });
+
   calculateTasks();
 };
 
