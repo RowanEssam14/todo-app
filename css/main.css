@@ -41,9 +41,14 @@ body {
   cursor: pointer;
   color: var(--text-color);
 }
+.todo-container,
+.tasks-stats {
+  width: 100%;
+  max-width: 600px;
+}
 
 .todo-container {
-  width: 600px;
+
   margin: 56px auto 0;
   background-color: var(--container-bg);
 }
@@ -148,7 +153,6 @@ body {
 }
 
 .tasks-stats {
-  width: 600px;
   margin: 10px auto;
   display: flex;
   justify-content: space-between;
